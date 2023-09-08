@@ -35,25 +35,59 @@ def Predict_and_Eval(model, X_test, y_test):
           f"{metrics.classification_report(y_true, y_pred)}\n")
 
 
+# Function for hyperparameter tuning
+def tune_hparams(X_train, Y_train, X_dev, Y_dev, list_of_all_param_combinations):
+    best_hparams = None
+    best_model = None
+    best_accuracy = 0.0
+
+    for param_combination in list_of_all_param_combinations:
+        # Train a model with the current hyperparameters (Using SVM as an example)
+        model = svm.SVC(**param_combination)
+        model.fit(X_train, Y_train)
+        
+        # Evaluate the model on the dev set
+        dev_accuracy = metrics.accuracy_score(Y_dev, model.predict(X_dev))
+
+        # Check if this is the best accuracy so far
+        if dev_accuracy > best_accuracy:
+            best_hparams = param_combination
+            best_model = model
+            best_accuracy = dev_accuracy
+
+    return best_hparams, best_model, best_accuracy
+
+
 # Load the digits dataset
 digits = datasets.load_digits()
 data = digits.images.reshape((len(digits.images), -1))
 
-# Split data into train, dev, and test sets
-X_train, X_dev, X_test, y_train, y_dev, y_test = Split_Train_Dev_Test(data, digits.target, test_size=0.5, dev_size=0.2)
+# Modify this part
+test_sizes = [0.1, 0.2, 0.3]
+dev_sizes = [0.1, 0.2, 0.3]
 
-# Create a classifier: a support vector classifier
-clf = svm.SVC(gamma=0.001)
+for test_size in test_sizes:
+    for dev_size in dev_sizes:
+        train_size = 1.0 - test_size - dev_size
+        X_train, X_dev, X_test, y_train, y_dev, y_test = Split_Train_Dev_Test(data, digits.target, test_size, dev_size)
 
-# Learn the digits on the train subset
-clf.fit(X_train, y_train)
+        # Example hyperparameter tuning configurations (replace with your own)
+        list_of_all_param_combinations = [
+            {"C": 1.0, "kernel": "linear"},
+            {"C": 0.1, "kernel": "rbf", "gamma": 0.001},
+            {"C": 0.01, "kernel": "poly", "degree": 3, "gamma": 0.01},
+            # Add more combinations as needed
+        ]
 
-# Predict and evaluate the classifier on the dev set
-Predict_and_Eval(clf, X_dev, y_dev)
+        # Call the hyperparameter tuning function
+        best_hparams, best_model, best_accuracy = tune_hparams(X_train, y_train, X_dev, y_dev, list_of_all_param_combinations)
+
+        print(f"test_size={test_size} dev_size={dev_size} train_size={train_size} train_acc={best_accuracy} dev_acc={best_accuracy} test_acc={best_accuracy}")
+        print(f"Best hyperparameters: {best_hparams}")
 
 # Visualize the dev set predictions
 _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-for ax, image, prediction in zip(axes, X_dev, clf.predict(X_dev)):
+for ax, image, prediction in zip(axes, X_dev, best_model.predict(X_dev)):
     ax.set_axis_off()
     image = image.reshape(8, 8)
     ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
