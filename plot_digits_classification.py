@@ -4,14 +4,12 @@ import matplotlib.pyplot as plt
 from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 
-
 # Define the function for splitting data into train, dev, and test sets
 def Split_Train_Dev_Test(X, y, test_size, dev_size):
     X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=(test_size + dev_size), shuffle=False)
     X_dev, X_test, y_dev, y_test = train_test_split(X_temp, y_temp, test_size=(dev_size / (test_size + dev_size)),
                                                     shuffle=False)
     return X_train, X_dev, X_test, y_train, y_dev, y_test
-
 
 # Define the function for predicting and evaluating the model
 def Predict_and_Eval(model, X_test, y_test):
@@ -33,7 +31,6 @@ def Predict_and_Eval(model, X_test, y_test):
 
     print("Classification report rebuilt from confusion matrix:\n"
           f"{metrics.classification_report(y_true, y_pred)}\n")
-
 
 # Function for hyperparameter tuning
 def tune_hparams(X_train, Y_train, X_dev, Y_dev, list_of_all_param_combinations):
@@ -57,10 +54,16 @@ def tune_hparams(X_train, Y_train, X_dev, Y_dev, list_of_all_param_combinations)
 
     return best_hparams, best_model, best_accuracy
 
-
 # Load the digits dataset
 digits = datasets.load_digits()
 data = digits.images.reshape((len(digits.images), -1))
+
+# Add these statements to print the requested information
+total_samples = len(data)
+image_height, image_width = digits.images[0].shape
+
+print(f"Number of total samples in the dataset: {total_samples}")
+print(f"Size of the images in the dataset (height x width): {image_height} x {image_width}")
 
 # Modify this part
 test_sizes = [0.1, 0.2, 0.3]
