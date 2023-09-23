@@ -25,7 +25,14 @@ jobs:
 
     - name: Run the script
       run: |
-        python plot_digits_classification.py  # Replace with the name of your Python script
+        python plot_digits_classification.py  # Replace the name of your Python script
+        
+        # Add a loop to run the script with different image sizes
+        for image_size in 4 6 8
+        do
+            echo "Running with image size: ${image_size}x${image_size}"
+            python plot_digits_classification.py --image-size ${image_size}  # Replace with the argument to pass image size
+        done
 
     # Add a new step to print a message
     - name: Print completion message
