@@ -26,3 +26,9 @@ jobs:
     - name: Run the script
       run: |
         python plot_digits_classification.py  # Replace with the name of your Python script
+
+    # Add a new step to print a message
+    - name: Print completion message
+      run: echo "Hyperparameter Tuning workflow completed successfully!"
+
+# You can add more steps as needed for your workflow
