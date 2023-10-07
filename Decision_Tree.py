@@ -1,8 +1,7 @@
-from sklearn import tree
-X = [[0, 0], [1, 1]]
-Y = [0, 1]
-clf = tree.DecisionTreeClassifier()
-clf = clf.fit(X, Y)
-clf.predict([[2., 2.]])
-array([1])
-
+>>> from sklearn.datasets import load_iris
+>>> from sklearn import tree
+>>> iris = load_iris()
+>>> X, y = iris.data, iris.target
+>>> clf = tree.DecisionTreeClassifier()
+>>> clf = clf.fit(X, y)
+tree.plot_tree(clf)
