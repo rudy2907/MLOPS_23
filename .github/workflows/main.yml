@@ -3,7 +3,7 @@ name: Hyperparameter Tuning
 on:
   push:
     branches:
-      - feature/assignment3
+      - feature/quiz2
 
 jobs:
   build:
@@ -26,7 +26,7 @@ jobs:
     - name: Run the script
       run: |
         python plot_digits_classification.py  # Replace the name of your Python script
-        
+
         # Add a loop to run the script with different image sizes
         for image_size in 4 6 8
         do
@@ -37,5 +37,3 @@ jobs:
     # Add a new step to print a message
     - name: Print completion message
       run: echo "Hyperparameter Tuning workflow completed successfully!"
-
-# You can add more steps as needed for your workflow
