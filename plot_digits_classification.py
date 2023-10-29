@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from skimage.transform import resize
 from sklearn.metrics import confusion_matrix, f1_score
 import numpy as np
+from sklearn.model_selection import GridSearchCV  # Import GridSearchCV
 
 # Define the function for splitting data into train, dev, and test sets
 def Split_Train_Dev_Test(X, y, test_size, dev_size):
