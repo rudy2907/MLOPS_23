@@ -1,0 +1,21 @@
+name: Training Model
+
+on:
+  push:
+    branches:
+      - docker_assignment
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: docker build -t assignment4:a4 .
+
+    - name: Run Docker container
+      run: docker run -v /MLOPS_23/models assignment4:a4
+
