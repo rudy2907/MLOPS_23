@@ -1,20 +1,27 @@
+
 # Use a Python base image
 FROM python:3.9
+
 
 # Set a working directory
 WORKDIR /app
 
+
 # Copy your model training code into the container
 COPY . /app
+
 
 # Install any required dependencies
 RUN pip install -r requirements.txt
 
+
 # Define an environment variable for the model output directory
 ENV MODEL_OUTPUT_DIR /models
 
+
 # Create a volume for the model output directory
 VOLUME $MODEL_OUTPUT_DIR
+
 
 # Run your training script
 CMD ["python", "Decision_Tree.py"]
