@@ -27,4 +27,12 @@ jobs:
 
     - name: Run tests
       run: |
+<<<<<<< HEAD
         python -m pytest tests/test_app.py
+=======
+      python -m pytest tests/test_app.py
+        
+
+    
+
+>>>>>>> refs/remotes/origin/feature/quiz4
