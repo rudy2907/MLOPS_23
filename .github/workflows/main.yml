@@ -1,39 +1,29 @@
-name: Hyperparameter Tuning
+name: Python CI
 
 on:
   push:
     branches:
-      - feature/quiz2
+      - feature/quiz4  # Adjust to match your branch name
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9  # Replace with your desired Python version
+        python-version: 3.8
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt  # Replace with your actual requirements file
-        # Add any other setup steps you need here
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Add this line if you have a requirements.txt file
 
-    - name: Run the script
+    - name: Run tests
       run: |
-        python plot_digits_classification.py  # Replace the name of your Python script
-
-        # Add a loop to run the script with different image sizes
-        for image_size in 4 6 8
-        do
-            echo "Running with image size: ${image_size}x${image_size}"
-            python plot_digits_classification.py --image-size ${image_size}  # Replace with the argument to pass image size
-        done
-
-    # Add a new step to print a message
-    - name: Print completion message
-      run: echo "Hyperparameter Tuning workflow completed successfully!"
+        python -m pytest tests/
