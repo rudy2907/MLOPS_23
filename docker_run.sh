@@ -1,6 +1,8 @@
 # Use an official Python runtime as a parent image
 FROM python:3.8
-
+# docker login final.azurecr.io -u Final
+# docker tag final_image:tag final.azurecr.io/final_image:tag
+# docker push final.azurecr.io/final_image:tag
 # Set the working directory in the container
 WORKDIR /app
 
