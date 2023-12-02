@@ -24,5 +24,5 @@ jobs:
         pip install -r requirements.txt  # Add this line if you have a requirements.txt file
         pip install pytest  # Add this line to install pytest
 
-    - name: Run decision_tree.py
-      run: python decision_tree.py
+    - name: Run Decision_Tree.py
+      run: python Decision_Tree.py
