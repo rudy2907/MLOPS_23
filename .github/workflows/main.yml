@@ -1,9 +1,7 @@
-name: Python CI
-
 on:
   push:
     branches:
-      - feature/quiz4  # Adjust to match your branch name
+      - feature/final_exam  # Adjust to match your branch name
 
 jobs:
   build:
@@ -27,12 +25,17 @@ jobs:
 
     - name: Run tests
       run: |
-<<<<<<< HEAD
-        python -m pytest tests/test_app.py
-=======
-      python -m pytest tests/test_app.py
+        python -m pytest tests/  # Assuming your tests are in a directory named "tests"
         
-
-    
-
->>>>>>> refs/remotes/origin/feature/quiz4
+    - name: Build Docker images
+      run: |
+        docker build -t dependency_image -f DependencyDockerfile .
+        docker build -t final_image -f FinalDockerfile .
+        
+    - name: Push Docker images to Azure Container Registry
+      run: |
+        docker login <your-azure-container-registry-url> -u <your-azure-registry-username> -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+        docker tag dependency_image:latest <your-azure-container-registry-url>/dependency_image:latest
+        docker tag final_image:latest <your-azure-container-registry-url>/final_image:latest
+        docker push <your-azure-container-registry-url>/dependency_image:latest
+        docker push <your-azure-container-registry-url>/final_image:latest
