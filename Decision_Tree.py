@@ -2,12 +2,14 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import numpy as np
 from sklearn import datasets, svm, tree
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, f1_score
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV
 from skimage.transform import resize
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.utils.validation import check_is_fitted
+from joblib import load
 
-app = Flask(__name)
+app = Flask(__name__)
 
 # Define the function for splitting data into train, dev, and test sets
 def Split_Train_Dev_Test(X, y, test_size, dev_size):
@@ -25,10 +27,19 @@ def resize_images(data, new_shape):
 
 # Function for hyperparameter tuning
 def tune_hparams(model, param_grid, X_train, y_train, X_dev, y_dev):
+    if isinstance(model, LogisticRegression):
+        param_grid['solver'] = ['new_solver1', 'new_solver2']  # Add the solvers you want to try
+
+    scaler = StandardScaler()
+    X_train_normalized = scaler.fit_transform(X_train)
+    X_dev_normalized = scaler.transform(X_dev)
+
     grid_search = GridSearchCV(model, param_grid, cv=3, n_jobs=-1)
-    grid_search.fit(X_train, y_train)
+    grid_search.fit(X_train_normalized, y_train)
+
     best_model = grid_search.best_estimator_
-    best_accuracy = best_model.score(X_dev, y_dev)
+    best_accuracy = best_model.score(X_dev_normalized, y_dev)
+
     return grid_search.best_params_, best_model, best_accuracy
 
 # Load the MNIST dataset
@@ -52,7 +63,7 @@ def upload_images():
             return jsonify({"error": str(e)})
 
     X = np.array(digit_predictions)
-    
+
     # Split the data for model evaluation
     test_size = 0.2
     dev_size = 0.1
@@ -73,6 +84,7 @@ def upload_images():
     tree_prediction = tree_best_model.predict(X)
 
     return jsonify({"svm_prediction": int(svm_prediction[0]), "tree_prediction": int(tree_prediction[0])})
+
 # the application 
 @app.route('/api/compare_images', methods=['POST'])
 def compare_images():
@@ -85,5 +97,25 @@ def compare_images():
     else:
         return jsonify({"error": "Please provide both SVM and Decision Tree predictions."})
 
+# Load Logistic Regression models and predict routes
+def load_model(model_type, solver_name):
+    if model_type == 'lr':
+        model = load(f'002_lr_{solver_name}.joblib')
+    elif model_type == 'svm':
+        model = load(f'002_svm_{solver_name}.joblib')
+    elif model_type == 'tree':
+        model = load(f'002_tree_{solver_name}.joblib')
+    else:
+        raise ValueError("Invalid model type")
+    return model
+
+@app.route('/api/predict/<model_type>/<solver_name>', methods=['POST'])
+def predict(model_type, solver_name):
+    data = request.get_json()
+    model = load_model(model_type, solver_name)
+    prediction = model.predict(data['features'])
+    return jsonify({"prediction": int(prediction)})
+
 if __name__ == '__main__':
     app.run(debug=True)
+
